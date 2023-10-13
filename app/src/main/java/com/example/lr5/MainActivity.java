@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.widget.Button;
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     morseCode.append(" ");
                 } else if (morseCodeMap.containsKey(character)) {
                     morseCode.append(morseCodeMap.get(character));
+                    morseCode.append(" ");
                 }
             }
 
@@ -107,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isFlashlightOn = false;
     private Vibrator vibrator;
 
+    private LinearLayout layout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,21 +118,28 @@ public class MainActivity extends AppCompatActivity {
 
         Switch flashlightSwitch = findViewById(R.id.switch1);
         Button morseButton = findViewById(R.id.morseButton);
-        LinearLayout layout = findViewById(R.id.linearLayout);
+        Button morseButton2 = findViewById(R.id.morseButton2);
+         layout = findViewById(R.id.linearLayout);
         EditText editText = findViewById(R.id.editTextText);
         TextView textView = findViewById(R.id.textView);
 
         flashlightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 turnOnFlashlight();
-                layout.setBackgroundColor(Color.YELLOW);
+                layout.setBackgroundColor(Color.WHITE);
             } else {
                 turnOffFlashlight();
-                layout.setBackgroundColor(Color.WHITE);
+                layout.setBackgroundColor(Color.BLACK);
             }
         });
 
         morseButton.setOnClickListener(v -> {
+            String text = editText.getText().toString();
+            String morseCode = textToMorse(text);
+            textView.setText(morseCode);
+        });
+
+        morseButton2.setOnClickListener(v -> {
             String text = editText.getText().toString();
             String morseCode = textToMorse(text);
             textView.setText(morseCode);
@@ -147,7 +158,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
+
     }
+
+
 
 
     private void turnOnFlashlight() {
@@ -177,19 +192,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void vibrateMorseCode(String morseCode) {
-        long dotDuration = 200; // Длительность точки (миллисекунды)
-        long dashDuration = dotDuration * 3; // Длительность тире (3 раза дольше точки)
-        long spaceDuration = dotDuration; // Длительность паузы между символами (равна точке)
-        long letterSpaceDuration = dashDuration - spaceDuration; // Длительность паузы между буквами
+        long dotDuration = 500; // Длительность точки (миллисекунды)
+        long dashDuration = dotDuration * 2; // Длительность тире (3 раза дольше точки)
+        long letterSpaceDuration = dashDuration ; // Длительность паузы между буквами
+
+        final Handler handler = new Handler();
 
         for (char c : morseCode.toCharArray()) {
+
             if (c == '.') {
-                vibrator.vibrate(VibrationEffect.createOneShot(dotDuration,5));
+                vibrator.vibrate(VibrationEffect.createOneShot(dotDuration, 150));
             } else if (c == '-') {
-                vibrator.vibrate(VibrationEffect.createOneShot(dashDuration,5));
-            } else if (c == ' ') {
-                vibrator.vibrate(VibrationEffect.createOneShot(spaceDuration,-1));
+                vibrator.vibrate(VibrationEffect.createOneShot(dashDuration, 100));
             }
+            try {
+                Thread.sleep(letterSpaceDuration);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Добавляем паузу между символами
+
         }
     }
 

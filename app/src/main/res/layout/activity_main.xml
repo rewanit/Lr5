@@ -35,7 +35,7 @@
                 android:layout_height="93dp"
                 android:ems="10"
                 android:inputType="text"
-                android:text="Тест" />
+                android:text="SOS" />
 
             <Button
                 android:id="@+id/morseButton"
@@ -49,6 +49,12 @@
                 android:layout_height="109dp"
                 android:textAlignment="center"
                 android:textSize="34sp" />
+
+            <Button
+                android:id="@+id/morseButton2"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:text="Преобр + Вибро" />
         </LinearLayout>
 
     </LinearLayout>
