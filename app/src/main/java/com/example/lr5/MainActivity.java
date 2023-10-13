@@ -197,16 +197,22 @@ public class MainActivity extends AppCompatActivity {
         long letterSpaceDuration = dashDuration ; // Длительность паузы между буквами
 
         final Handler handler = new Handler();
-
+        long lastDuration = 0;
         for (char c : morseCode.toCharArray()) {
 
             if (c == '.') {
                 vibrator.vibrate(VibrationEffect.createOneShot(dotDuration, 150));
+                lastDuration = dotDuration;
             } else if (c == '-') {
                 vibrator.vibrate(VibrationEffect.createOneShot(dashDuration, 100));
+                lastDuration = dashDuration;
+            }else if (c==' ')
+            {
+                lastDuration =0;
             }
+
             try {
-                Thread.sleep(letterSpaceDuration);
+                Thread.sleep(lastDuration+letterSpaceDuration);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
